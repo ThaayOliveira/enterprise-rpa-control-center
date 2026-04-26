@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtualenv
+venv/
+.env/
+.venv/
+
+# Environment variables
+.env
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Reports / screenshots
+reports/
+screenshots/
+
+# Streamlit cache
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pytest
+.pytest_cache/
+
+# coverage
+htmlcov/
+.coverage
+
+# build
+dist/
+build/
+
+# Docker local volumes
+docker-data/
+
+# temp
+*.tmp

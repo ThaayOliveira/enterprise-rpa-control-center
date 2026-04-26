@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+.venv/
+
+# Env vars local
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Local DB
+*.db
+*.sqlite
+*.sqlite3
+
+# Reports
+reports/
+screenshots/
+
+# Tests
+tests/
+
+# Cache
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
