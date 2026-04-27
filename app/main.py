@@ -1,13 +1,15 @@
 from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 
-from app.database import Base, engine
+from app.database import Base, engine, SessionLocal
 from app.scheduler import start_scheduler, stop_scheduler
 
 from app.services.bot_service import run_bot
 from app.services.auth_service import authenticate
 
 from app.schemas.auth_schema import LoginRequest
+
+from app.models import Execution
 
 from app.auth import (
     verify_token,
@@ -76,3 +78,29 @@ def execute(
     user=Depends(verify_token)
 ):
     return run_bot(bot_name)
+
+
+@app.get("/executions")
+def list_executions(user=Depends(verify_token)):
+    db = SessionLocal()
+
+    try:
+        data = db.query(Execution)\
+            .order_by(Execution.id.desc())\
+            .limit(100)\
+            .all()
+
+        return [
+            {
+                "id": item.id,
+                "bot_name": item.bot_name,
+                "status": item.status,
+                "message": item.message,
+                "duration": item.duration,
+                "created_at": item.created_at
+            }
+            for item in data
+        ]
+
+    finally:
+        db.close()

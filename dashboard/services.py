@@ -34,3 +34,11 @@ def executar_bot(bot_name, token):
         },
         timeout=120
     )
+
+def get_executions(token):
+    return requests.get(
+        f"{API_URL}/executions",
+        headers={
+            "Authorization": f"Bearer {token}"
+        }
+    )
