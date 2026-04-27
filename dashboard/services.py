@@ -11,8 +11,8 @@ def login(username, password):
     return requests.post(
         f"{API_URL}/login",
         json={
-            "username": username,
-            "password": password
+            "username": username.strip(),
+            "password": password.strip()
         }
     )
 
@@ -34,6 +34,7 @@ def executar_bot(bot_name, token):
         },
         timeout=120
     )
+
 
 def get_executions(token):
     return requests.get(

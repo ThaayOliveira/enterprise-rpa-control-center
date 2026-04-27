@@ -5,10 +5,12 @@ from services import get_executions
 
 
 def load_executions():
+    token = st.session_state.get("token")
 
-    resp = get_executions(
-        st.session_state.token
-    )
+    if not token:
+        return pd.DataFrame()
+
+    resp = get_executions(token)
 
     if resp.status_code == 200:
         data = resp.json()
