@@ -88,6 +88,11 @@ Bots RPA / Automação
 SQLite + Logs
 
 # Comandos
+pip install -r requirements.txt    ----> dependências python
+pip install apscheduler
+pip install webdriver-manager
+python -m venv venv        ---> ambiente virtual
+venv\Scripts\activate
 uvicorn app.main:app --reload    ----> swagger
 streamlit run dashboard/dashboard.py
-docker compose up --build    ---> subir no docker
+docker compose up --build    ---> subir e build no docker
