@@ -8,8 +8,36 @@ from auth import refresh_access_token
 
 
 def render_header():
-    st.title("Enterprise RPA Control Center")
-    st.caption("Plataforma centralizada de automações corporativas")
+    st.markdown(
+        """
+        <div class="main-title">
+            Enterprise RPA Control Center
+        </div>
+
+        <div class="subtitle">
+            Plataforma centralizada de automações corporativas
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def executar_bot_com_refresh(bot_name):
+    resp = executar_bot(
+        bot_name,
+        st.session_state.token
+    )
+
+    if resp.status_code == 401:
+        ok = refresh_access_token()
+
+        if ok:
+            resp = executar_bot(
+                bot_name,
+                st.session_state.token
+            )
+
+    return resp.json()
 
 
 def render_buttons():
@@ -17,84 +45,153 @@ def render_buttons():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    if col1.button("📄 Report Bot", width="stretch"):
-        executar("report")
+    with col1:
+        if st.button("📄 Report Bot"):
+            mostrar_resultado(executar_bot_com_refresh("report"))
 
-    if col2.button("❤️ Health Bot", width="stretch"):
-        executar("health")
+    with col2:
+        if st.button("❤️ Health Bot"):
+            mostrar_resultado(executar_bot_com_refresh("health"))
 
-    if col3.button("📡 Monitor Bot", width="stretch"):
-        executar("monitor")
+    with col3:
+        if st.button("📡 Monitor Bot"):
+            mostrar_resultado(executar_bot_com_refresh("monitor"))
 
-    if col4.button("📊 Reconcile Bot", width="stretch"):
-        executar("reconcile")
+    with col4:
+        if st.button("📊 Reconcile Bot"):
+            mostrar_resultado(executar_bot_com_refresh("reconcile"))
+
+    st.divider()
 
 
-def executar(bot_name):
-    token = st.session_state.token
-
-    resp = executar_bot(bot_name, token)
-
-    if resp.status_code == 401:
-        if refresh_access_token():
-            token = st.session_state.token
-            resp = executar_bot(bot_name, token)
-
-    if resp.status_code == 200:
-        st.success(f"{bot_name} executado com sucesso")
+def mostrar_resultado(resultado):
+    if resultado.get("status") == "success":
+        st.success(resultado["message"])
     else:
-        st.error("Erro ao executar bot")
+        st.error(resultado.get("message", "Erro ao executar bot"))
 
 
 def render_metrics():
-    st.subheader("📊 Métricas")
-
     df = load_executions()
 
     if df.empty:
-        st.info("Sem dados disponíveis")
+        st.info("Sem dados")
         return
 
     total = len(df)
     success = len(df[df["status"] == "success"])
     error = len(df[df["status"] == "error"])
 
-    col1, col2, col3 = st.columns(3)
+    avg = round(df["duration"].mean(), 2) if total else 0
 
-    col1.metric("Total Execuções", total)
-    col2.metric("Sucesso", success)
-    col3.metric("Erro", error)
+    st.subheader("📈 Indicadores")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("Execuções", total)
+    col2.metric("Sucessos", success)
+    col3.metric("Falhas", error)
+    col4.metric("Tempo Médio", f"{avg}s")
+
+    st.divider()
 
 
 def render_charts():
-    st.subheader("📈 Gráficos")
-
     df = load_executions()
 
     if df.empty:
-        st.info("Sem dados para gráficos")
         return
 
-    status_count = df["status"].value_counts().reset_index()
-    status_count.columns = ["status", "count"]
+    st.subheader("📊 Analytics")
 
-    fig = px.pie(
-        status_count,
-        names="status",
-        values="count",
-        title="Distribuição de Status"
-    )
+    col1, col2 = st.columns(2)
 
-    st.plotly_chart(fig, width="stretch")
+    bot_counts = df["bot_name"].value_counts().reset_index()
+    bot_counts.columns = ["Bot", "Execuções"]
+
+    fig1 = px.bar(bot_counts, x="Bot", y="Execuções", text_auto=True)
+    col1.plotly_chart(fig1, width="stretch")
+
+    status_counts = df["status"].value_counts().reset_index()
+    status_counts.columns = ["Status", "Total"]
+
+    fig2 = px.pie(status_counts, names="Status", values="Total", hole=0.45)
+    col2.plotly_chart(fig2, width="stretch")
+
+    avg_time = df.groupby("bot_name")["duration"].mean().reset_index()
+    avg_time.columns = ["Bot", "Tempo Médio"]
+
+    fig3 = px.bar(avg_time, x="Bot", y="Tempo Médio", text_auto=".2f")
+    st.plotly_chart(fig3, width="stretch")
+
+    st.divider()
 
 
 def render_table():
-    st.subheader("📋 Histórico")
-
     df = load_executions()
 
+    st.subheader("📋 Histórico de Execuções")
+
     if df.empty:
-        st.info("Sem histórico disponível")
+        st.info("Nenhuma execução registrada.")
         return
 
-    st.dataframe(df, width="stretch")
+    df = df.copy()
+    df["created_at"] = pd.to_datetime(df["created_at"])
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    bot_filter = col1.selectbox(
+        "Bot",
+        ["Todos"] + sorted(df["bot_name"].unique())
+    )
+
+    status_filter = col2.selectbox(
+        "Status",
+        ["Todos"] + sorted(df["status"].unique())
+    )
+
+    periodo = col3.selectbox(
+        "Período",
+        ["Tudo", "Hoje", "7 dias", "30 dias"]
+    )
+
+    busca = col4.text_input("Buscar")
+
+    if bot_filter != "Todos":
+        df = df[df["bot_name"] == bot_filter]
+
+    if status_filter != "Todos":
+        df = df[df["status"] == status_filter]
+
+    hoje = pd.Timestamp.now()
+
+    if periodo == "Hoje":
+        df = df[df["created_at"].dt.date == hoje.date()]
+    elif periodo == "7 dias":
+        df = df[df["created_at"] >= hoje - pd.Timedelta(days=7)]
+    elif periodo == "30 dias":
+        df = df[df["created_at"] >= hoje - pd.Timedelta(days=30)]
+
+    if busca:
+        df = df[
+            df["message"].str.contains(busca, case=False, na=False)
+            | df["bot_name"].str.contains(busca, case=False, na=False)
+        ]
+
+    df["status"] = df["status"].replace({
+        "success": "🟢 success",
+        "error": "🔴 error"
+    })
+
+    csv = df.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        "📥 Exportar CSV",
+        data=csv,
+        file_name="relatorio_execucoes.csv",
+        mime="text/csv",
+        width="stretch"
+    )
+
+    st.dataframe(df, height=520, width="stretch")
