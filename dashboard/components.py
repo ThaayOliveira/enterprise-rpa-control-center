@@ -3,8 +3,8 @@ import pandas as pd
 import plotly.express as px
 
 from services import executar_bot
-from database import get_executions
-from auth import refresh_access_token
+
+from repository import load_executions
 
 
 def render_header():
@@ -109,7 +109,7 @@ def render_metrics():
 
 
 def render_charts():
-    df = get_executions()
+    df = load_executions()
 
     if df.empty:
         return
@@ -194,7 +194,7 @@ def render_charts():
 
 
 def render_table():
-    df = get_executions()
+    df = load_executions()
 
     st.subheader("📋 Histórico de Execuções")
 
