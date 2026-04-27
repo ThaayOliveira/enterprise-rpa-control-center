@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 from services import executar_bot
-from database import get_executions
+from dashboard.repository import load_executions
 from auth import refresh_access_token
 
 
@@ -85,7 +85,7 @@ def mostrar_resultado(resultado):
 
 
 def render_metrics():
-    df = get_executions()
+    df = load_executions()
 
     total = len(df)
     success = len(df[df["status"] == "success"])
