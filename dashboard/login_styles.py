@@ -2,94 +2,166 @@ import streamlit as st
 
 
 def load_login_styles():
-
     st.markdown("""
     <style>
 
-    .stApp{
-        background:#000;
+    html, body, .stApp {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #0a0a0a !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        height: 100vh !important;
+        width: 100vw !important;
     }
 
-    section[data-testid="stSidebar"]{
-        display:none;
+    [data-testid="stHeader"],
+    header,
+    footer,
+    #MainMenu,
+    section[data-testid="stSidebar"] {
+        display: none !important;
+        visibility: hidden !important;
     }
 
-    .brand{
-        color:white;
-        font-size:24px;
-        font-weight:700;
-        margin-top:30px;
-        margin-bottom:100px;
+    .block-container,
+    [data-testid="stAppViewContainer"],
+    .main .block-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
 
-    .login-title{
-        color:white;
-        font-size:58px;
-        font-weight:700;
-        margin-bottom:45px;
+    .login-center {
+        text-align: center;
+        margin-top: 70px;
+        margin-bottom: 25px;
     }
 
-    .forgot{
-        color:#5b7cff;
-        font-size:14px;
-        margin-top:8px;
-        margin-bottom:22px;
+    .brand {
+        color: #ffffff;
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 35px;
+        letter-spacing: -0.5px;
     }
 
-    .signup{
-        color:white;
-        opacity:.75;
-        margin-top:120px;
-        font-size:15px;
+    .login-title {
+        color: #ffffff;
+        font-size: 62px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 4px;
+        letter-spacing: -1px;
     }
 
-    .stTextInput{
-        max-width:420px;
+    label,
+    .stTextInput label,
+    [data-testid="stTextInput"] label {
+        color: #3b82f6 !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        margin-bottom: 8px !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .stTextInput label{
-        color:white !important;
-        font-size:15px;
-        margin-bottom:6px;
+    .stTextInput {
+        margin-bottom: 18px !important;
     }
 
-    .stTextInput input{
-        background:#111;
-        color:white;
-        border:1px solid #2a2a2a;
-        border-radius:10px;
-        height:48px;
-        padding:0 16px;
-        font-size:16px;
-        line-height:48px;
+    input,
+    .stTextInput input,
+    [data-testid="stTextInput"] input {
+        height: 50px !important;
+        font-size: 15px !important;
+        border-radius: 12px !important;
+        background: #151515 !important;
+        color: #ffffff !important;
+        border: 1px solid #2b2b2b !important;
+        padding: 12px 16px !important;
+        box-sizing: border-box !important;
     }
 
-    .stTextInput input::placeholder{
-        color:#777;
-        opacity:1;
+    input:focus,
+    .stTextInput input:focus {
+        border-color: #4f46e5 !important;
+        box-shadow: 0 0 0 3px rgba(79,70,229,0.15) !important;
+        outline: none !important;
     }
 
-    .stButton{
-        max-width:420px;
+    input::placeholder {
+        color: #5f5f5f !important;
     }
 
-    .stButton button{
-        height:50px;
-        background:#4a46ff;
-        color:white;
-        border:none;
-        border-radius:10px;
-        font-weight:700;
-        font-size:16px;
-        margin-top:14px;
+    .forgot {
+        color: #8b8b8b;
+        font-size: 13px;
+        margin-top: 4px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
     }
 
-    .stButton button:hover{
-        background:#3730ff;
+    .forgot:hover {
+        color: #6366f1;
     }
 
-    #MainMenu, footer, header{
-        visibility:hidden;
+    .stButton button,
+    .stButton > button {
+        width: 100% !important;
+        height: 52px !important;
+        border-radius: 12px !important;
+        border: none !important;
+        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important;
+        color: white !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.8px !important;
+        margin-top: 6px !important;
+        box-shadow: 0 8px 20px rgba(79,70,229,0.25) !important;
+    }
+
+    .stButton button:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(135deg, #818cf8 0%, #4f46e5 100%) !important;
+    }
+
+    .signup {
+        color: #8b8b8b;
+        font-size: 14px;
+        margin-top: 28px;
+        text-align: center;
+    }
+
+    .signup b {
+        color: white;
+    }
+
+    @media (max-width: 900px) {
+
+        .login-title {
+            font-size: 46px;
+        }
+    }
+
+    @media (max-width: 480px) {
+
+        .login-center {
+            margin-top: 40px;
+        }
+
+        .login-title {
+            font-size: 38px;
+        }
+
+        input {
+            height: 46px !important;
+        }
+
+        .stButton button {
+            height: 48px !important;
+        }
     }
 
     </style>

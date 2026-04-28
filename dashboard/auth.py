@@ -1,3 +1,5 @@
+# auth.py
+
 import streamlit as st
 
 from services import login, refresh_token
@@ -27,17 +29,21 @@ def render_login():
 
     load_login_styles()
 
-    left, right = st.columns([1, 1.7])
+    st.markdown(
+        """
+        <div class="login-center">
+            <div class="login-card">
+                <div class="brand">🏠 RPA ENTERPRISE</div>
+                <div class="login-title">Sign In</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-    with left:
+    col1, col2, col3 = st.columns([1, 1.2, 1])
 
-        st.markdown(
-            """
-            <div class="brand">🏠 RPA ENTERPRISE</div>
-            <div class="login-title">Sign In</div>
-            """,
-            unsafe_allow_html=True
-        )
+    with col2:
 
         username = st.text_input(
             "User Name",
@@ -57,7 +63,7 @@ def render_login():
 
         if st.button(
             "SIGN IN",
-            use_container_width=True
+            width="stretch"
         ):
 
             resp = login(username, password)
@@ -78,13 +84,6 @@ def render_login():
         st.markdown(
             "<div class='signup'>Don't have an account? <b>Sign up</b></div>",
             unsafe_allow_html=True
-        )
-
-    with right:
-
-        st.image(
-            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80",
-            use_container_width=True
         )
 
 
