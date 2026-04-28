@@ -1,7 +1,6 @@
 import time
 import requests
 import logging
-import app.utils.logger
 
 def run_monitor_bot():
     logging.info("MonitorBot iniciado")

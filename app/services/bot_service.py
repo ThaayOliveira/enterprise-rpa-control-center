@@ -1,6 +1,5 @@
 import time
 import logging
-import app.utils.logger
 
 from app.database import SessionLocal
 from app.models import Execution

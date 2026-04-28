@@ -1,6 +1,5 @@
 import requests
 import logging
-import app.utils.logger
 
 def run_health_bot():
     logging.info("Health bot iniciado")
