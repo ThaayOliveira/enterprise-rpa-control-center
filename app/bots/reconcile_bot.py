@@ -1,5 +1,4 @@
 import logging
-import app.utils.logger
 
 def run_reconcile_bot():
     logging.info("ReconcileBot iniciado")

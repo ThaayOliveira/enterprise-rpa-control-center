@@ -1,0 +1,17 @@
+name: Deploy Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger API Deploy
+        run: curl -X POST ${{ secrets.RENDER_API_HOOK }}
+
+      - name: Trigger Dashboard Deploy
+        run: curl -X POST ${{ secrets.RENDER_DASH_HOOK }}

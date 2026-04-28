@@ -1,8 +1,6 @@
 import logging
-import os
 from datetime import datetime
 
-import app.utils.logger
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
