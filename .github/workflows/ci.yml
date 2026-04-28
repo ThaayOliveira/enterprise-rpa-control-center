@@ -1,0 +1,46 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('requirements-api.txt') }}
+
+      - name: Install API dependencies
+        run: pip install -r requirements-api.txt
+
+      - name: Install Dashboard dependencies
+        run: pip install -r requirements-dashboard.txt
+
+      - name: Install Linter
+        run: pip install ruff
+
+      - name: Run Lint
+        run: ruff check .
+
+      - name: Validate Python syntax
+        run: python -m compileall .
