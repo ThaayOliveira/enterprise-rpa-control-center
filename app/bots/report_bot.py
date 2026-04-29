@@ -1,6 +1,6 @@
+import os
 import logging
 from datetime import datetime
-
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,43 +9,50 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from webdriver_manager.chrome import ChromeDriverManager
 
 def run_report_bot():
-    logging.info("Bot Selenium iniciado")
+    os.makedirs("reports", exist_ok=True)
 
     options = Options()
-    options.add_argument("--start-maximized")
-    # options.add_argument("--headless=new")  #  para rodar sem abrir navegador
+    options.add_argument("--window-size=1920,1080")
 
-    driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
-        options=options
-    )
+    if os.getenv("RENDER"):
+        options.binary_location = "/usr/bin/chromium"
+        options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+
+        driver = webdriver.Chrome(
+            service=Service("/usr/bin/chromedriver"),
+            options=options
+        )
+    else:
+        driver = webdriver.Chrome(options=options)
 
     try:
         driver.get("https://the-internet.herokuapp.com/login")
 
-        # Aguarda campo usuário aparecer
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "username"))
         ).send_keys("tomsmith")
 
-        driver.find_element(By.ID, "password").send_keys("SuperSecretPassword!")
-        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+        driver.find_element(By.ID, "password").send_keys(
+            "SuperSecretPassword!"
+        )
 
-        # Aguarda mensagem de sucesso
+        driver.find_element(
+            By.CSS_SELECTOR,
+            "button[type='submit']"
+        ).click()
+
         mensagem = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "flash"))
         ).text.strip()
 
-        # Screenshot com timestamp
-        nome_arquivo = datetime.now().strftime("%Y%m%d_%H%M%S")
-        caminho = f"reports/login_{nome_arquivo}.png"
-        driver.save_screenshot(caminho)
+        nome = datetime.now().strftime("%Y%m%d_%H%M%S")
+        caminho = f"reports/login_{nome}.png"
 
-        logging.info("Login realizado com sucesso")
-        logging.info(f"Screenshot salva em {caminho}")
+        driver.save_screenshot(caminho)
 
         return {
             "status": "success",
@@ -53,8 +60,6 @@ def run_report_bot():
         }
 
     except Exception as e:
-        logging.error(f"Falha no bot Selenium: {str(e)}")
-
         return {
             "status": "error",
             "message": str(e)
