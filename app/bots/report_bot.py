@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -16,15 +17,21 @@ def run_report_bot():
     options = Options()
     options.add_argument("--window-size=1920,1080")
 
-     # configuração para Render
+    # CONFIG PRODUÇÃO (Render)
     if os.getenv("RENDER"):
         options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
         options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
+        service = Service("/usr/bin/chromedriver")
+
+    # CONFIG LOCAL
+    else:
+        service = Service(ChromeDriverManager().install())
+
     driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
+        service=service,
         options=options
     )
 
