@@ -18,7 +18,7 @@ def run_report_bot():
 
      # configuração para Render
     if os.getenv("RENDER"):
-        options.binary_location = "/usr/bin/chromium"
+        options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
         options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
