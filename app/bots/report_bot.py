@@ -1,13 +1,13 @@
 import os
-import logging
 from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 def run_report_bot():
@@ -16,18 +16,17 @@ def run_report_bot():
     options = Options()
     options.add_argument("--window-size=1920,1080")
 
+     # configuração para Render
     if os.getenv("RENDER"):
         options.binary_location = "/usr/bin/chromium"
         options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
-        driver = webdriver.Chrome(
-            service=Service("/usr/bin/chromedriver"),
-            options=options
-        )
-    else:
-        driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()),
+        options=options
+    )
 
     try:
         driver.get("https://the-internet.herokuapp.com/login")
