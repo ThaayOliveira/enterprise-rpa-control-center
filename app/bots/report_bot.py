@@ -1,4 +1,5 @@
 import os
+import logging
 from datetime import datetime
 
 from selenium import webdriver
@@ -55,6 +56,8 @@ def run_report_bot():
             EC.presence_of_element_located((By.ID, "flash"))
         ).text.strip()
 
+        logging.info(f"Mensagem do site: {mensagem}")
+
         nome = datetime.now().strftime("%Y%m%d_%H%M%S")
         caminho = f"reports/login_{nome}.png"
 
@@ -62,13 +65,16 @@ def run_report_bot():
 
         return {
             "status": "success",
-            "message": mensagem
+            "message": "Report Bot executado com sucesso"
         }
 
+
     except Exception as e:
+        logging.error(str(e))
+
         return {
             "status": "error",
-            "message": str(e)
+            "message": "Erro ao executar o Report Bot"
         }
 
     finally:
