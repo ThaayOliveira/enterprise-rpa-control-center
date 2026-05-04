@@ -52,22 +52,25 @@ def run_report_bot():
             "button[type='submit']"
         ).click()
 
-        mensagem = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "flash"))
-        ).text.strip()
+        WebDriverWait(driver, 10).until(
+            EC.url_contains("/secure")
+        )
 
-        logging.info(f"Mensagem do site: {mensagem}")
+        driver.execute_script("""
+            var el = document.getElementById('flash');
+            if (el) { el.remove(); }
+        """)
 
         nome = datetime.now().strftime("%Y%m%d_%H%M%S")
         caminho = f"reports/login_{nome}.png"
-
         driver.save_screenshot(caminho)
+
+        logging.info("Login automatizado realizado com sucesso")
 
         return {
             "status": "success",
             "message": "Report Bot executado com sucesso"
         }
-
 
     except Exception as e:
         logging.error(str(e))
