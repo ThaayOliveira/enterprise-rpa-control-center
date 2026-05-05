@@ -18,10 +18,20 @@ def run_report_bot():
     options = Options()
     options.add_argument("--window-size=1920,1080")
 
+    options.add_argument("--headless=new")
+
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
+
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-notifications")
+    options.add_argument("--disable-save-password-bubble")
+    options.add_argument("--disable-password-manager-reauthentication")
+
     # CONFIG PRODUÇÃO (Render)
     if os.getenv("RENDER"):
         options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
-        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
 
@@ -37,6 +47,12 @@ def run_report_bot():
     )
 
     try:
+        driver.execute_script("""
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            })
+        """)
+
         driver.get("https://the-internet.herokuapp.com/login")
 
         WebDriverWait(driver, 10).until(
@@ -56,16 +72,11 @@ def run_report_bot():
             EC.url_contains("/secure")
         )
 
-        driver.execute_script("""
-            var el = document.getElementById('flash');
-            if (el) { el.remove(); }
-        """)
-
         nome = datetime.now().strftime("%Y%m%d_%H%M%S")
         caminho = f"reports/login_{nome}.png"
         driver.save_screenshot(caminho)
 
-        logging.info("Login automatizado realizado com sucesso")
+        logging.info("Report bot executado com sucesso")
 
         return {
             "status": "success",
