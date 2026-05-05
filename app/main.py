@@ -86,7 +86,7 @@ def list_executions(user=Depends(verify_token)):
 
     try:
         data = db.query(Execution)\
-            .order_by(Execution.id.desc())\
+            .order_by(Execution.id.asc())\
             .limit(100)\
             .all()
 
